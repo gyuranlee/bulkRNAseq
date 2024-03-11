@@ -20,3 +20,4 @@ vector <- unlist(namelist)
 #selected.genes.df에 선별한 gene list 적용 
 selected.genes.df = data.norm.table[vector,]
 
+##### 이후 과정은 heatmap, DEG script file과 동일하게 진행 #####
