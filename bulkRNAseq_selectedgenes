@@ -3,7 +3,13 @@
 ############ bulk RNA-seq analysis ################
 ################# selected gene ###################
 ###################################################
+### expression count table normalization 과정 까지는 똑같이 진행 해주세요! 
 
+#######################################
+############# heatmap 구현#############
+#######################################
+
+# heatmap에 표현할 유전자를 지정
 ############# file 불러오기 #############
 # gene을 select 한 이후 저장한 파일 불러오기
 # setwd() 로 마찬가지로 경로 지정 후 아래 불러올 파일 이후 경로 작성해주세요.
@@ -17,8 +23,16 @@ dim(namelist)
 
 # 자료형 변환
 vector <- unlist(namelist)
-
 #selected.genes.df에 선별한 gene list 적용 
 selected.genes.df = data.norm.table[vector,]
 
-##### 이후 과정은 heatmap, DEG script file과 동일하게 진행 #####
+# normalization(expression수치 범위 너무 넓어서) + 전체 합 0인 행 제거하기
+norm_selected.genes.df <- log10(selected.genes.df + 1)
+selected.genes.df <- norm_selected.genes.df[which(rowSums(norm_selected.genes.df) != 0),]
+
+# heatmap color 지정(바꾸려면 컬러차트 검색해서 추가, 제외 하면 됨.)
+hmcol <- colorRampPalette(c("#B2182B", "#D6604D", "#F4A582", "#FDDBC7", "#F7F7F7", "#D1E5F0", "#92C5DE", "#4393C3", "#2166AC"))(n = 10)
+# heatmap 그리기
+library(pheatmap)
+pheatmap(selected.genes.df, scale = "row")
+
