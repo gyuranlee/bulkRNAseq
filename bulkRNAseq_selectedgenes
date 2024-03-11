@@ -10,7 +10,8 @@
 file = read.csv(file="", header=TRUE)
 
 # 파일에서 중복된 gene name 제거 / 불러온 테이블 확인
-file = file[-which(duplicated(file$ID))] # 만약 input한 file에서 gene name이 나열된 column name이 ID가 아닌 다른 것이라면 ID자리에 그 column name을 입력해주세요.
+dim(file)
+file = file[-which(duplicated(file$ID)),] # 만약 input한 file에서 gene name이 나열된 column name이 ID가 아닌 다른 것이라면 ID자리에 그 column name을 입력해주세요.
 namelist = file[c(0:1)] # gene name이 있는 column만 남기고 다른 column은 제거하는 과정입니다. 첫번째 컬럼이 gene name이 아닌 경우 삭제할 범위를 다르게 지정해주세요.
 dim(namelist)
 
