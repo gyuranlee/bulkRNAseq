@@ -29,7 +29,7 @@ dim(namelist)
 # 위 파일에서 불러온 genelist들 중 data.norm.table에 존재하는 gene 만 선택하는 과정 (만약 select한 gene name이 rawfile상의 이름과 다를 경우 배제됨)
 data.norm.table_row_names <- rownames(data.norm.table)
 valid_id_list <- id_list[id_list %in% data.norm.table_row_names]
-slected.gene.list <- data.norm.table[valid_id_list, , drop = FALSE]
+new_data.norm.table <- data.norm.table[valid_id_list, , drop = FALSE]
 
 #heatmap그리기 전 normalization(전체 발현량 log normalization) / 전체 발현량이 0인 gene 제거
 norm_selected.genes.df <- log10(new_data.norm.table + 1)
