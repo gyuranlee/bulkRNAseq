@@ -17,22 +17,29 @@ file = read.csv(file="", header=TRUE)
 
 # 파일에서 중복된 gene name 제거 / 불러온 테이블 확인
 dim(file)
+any(duplicated(file_test)) #만약 이 코드를 실행시켰을때 결과가 'TRUE'로 반환된다면 아랫 줄을 실행시켜주고 'FALSE'라면 아래 줄을 실행시키지 말아주세요
+# 중복된 행이 없을경우 아래 코드를 실행 시키면 빈 벡터를 반환하게 되어 적절하게 작용하지 않을 수 있음
 file = file[-which(duplicated(file$ID)),] # 만약 input한 file에서 gene name이 나열된 column name이 ID가 아닌 다른 것이라면 ID자리에 그 column name을 입력해주세요.
+
+#컬럼 수정 (input한 gene 파일의 컬럼의 gene id에 대한 컬럼을 확인하고 나머지를 제거해야함)
+head(namelist) #이 코드 실행해보시고 gene name이 있는 column을 확인해주세요
 namelist = file[c(0:1)] # gene name이 있는 column만 남기고 다른 column은 제거하는 과정입니다. 첫번째 컬럼이 gene name이 아닌 경우 삭제할 범위를 다르게 지정해주세요.
 dim(namelist)
 
-# 자료형 변환
-vector <- unlist(namelist)
-#selected.genes.df에 선별한 gene list 적용 
-selected.genes.df = data.norm.table[vector,]
+# 위 파일에서 불러온 genelist들 중 data.norm.table에 존재하는 gene 만 선택하는 과정 (만약 select한 gene name이 rawfile상의 이름과 다를 경우 배제됨)
+data.norm.table_row_names <- rownames(data.norm.table)
+valid_id_list <- id_list[id_list %in% data.norm.table_row_names]
+slected.gene.list <- data.norm.table[valid_id_list, , drop = FALSE]
 
-# normalization(expression수치 범위 너무 넓어서) + 전체 합 0인 행 제거하기
-norm_selected.genes.df <- log10(selected.genes.df + 1)
+#heatmap그리기 전 normalization(전체 발현량 log normalization) / 전체 발현량이 0인 gene 제거
+norm_selected.genes.df <- log10(new_data.norm.table + 1)
 selected.genes.df <- norm_selected.genes.df[which(rowSums(norm_selected.genes.df) != 0),]
 
-# heatmap color 지정(바꾸려면 컬러차트 검색해서 추가, 제외 하면 됨.)
-hmcol <- colorRampPalette(c("#B2182B", "#D6604D", "#F4A582", "#FDDBC7", "#F7F7F7", "#D1E5F0", "#92C5DE", "#4393C3", "#2166AC"))(n = 10)
-# heatmap 그리기
+
+##heatmap
 library(pheatmap)
-pheatmap(selected.genes.df, scale = "row")
+library(viridis) #color불러오기위함
+h <- pheatmap(selected.genes.df, scale = "row", treeheight_row = F, treeheight_col = F, color = viridis(n=256, alpha = 1, begin = 0, end = 1, option = 'viridis'), fontsize_row = 4, cellwidth = 50)
+ggsave("./heatmap.png", plot = h, type="cairo", width = 8, height = 9, dpi = 300) #저장 > cairo는 화질 선명하게 하는 옵션이고, 크기는 width,height로 조절 가능함.
+
 
