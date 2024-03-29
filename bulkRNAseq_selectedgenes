@@ -17,7 +17,7 @@ file = read.csv(file="", header=TRUE)
 
 # 파일에서 중복된 gene name 제거 / 불러온 테이블 확인
 dim(file)
-any(duplicated(file_test)) #만약 이 코드를 실행시켰을때 결과가 'TRUE'로 반환된다면 아랫 줄을 실행시켜주고 'FALSE'라면 아래 줄을 실행시키지 말아주세요
+any(duplicated(file)) #만약 이 코드를 실행시켰을때 결과가 'TRUE'로 반환된다면 아랫 줄을 실행시켜주고 'FALSE'라면 아래 줄을 실행시키지 말아주세요
 # 중복된 행이 없을경우 아래 코드를 실행 시키면 빈 벡터를 반환하게 되어 적절하게 작용하지 않을 수 있음
 file = file[-which(duplicated(file$ID)),] # 만약 input한 file에서 gene name이 나열된 column name이 ID가 아닌 다른 것이라면 ID자리에 그 column name을 입력해주세요.
 
