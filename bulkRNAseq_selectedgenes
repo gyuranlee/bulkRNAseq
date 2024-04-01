@@ -4,6 +4,47 @@
 ################# selected gene ###################
 ###################################################
 ### expression count table normalization 과정 까지는 똑같이 진행 해주세요! 
+###################################################
+############ 20240123 update by GR ################
+############ bulk RNA-seq analysis ################
+#################### for DEG ######################
+###################################################
+library("DESeq2")
+library("ggplot2")
+library("reshape2")
+
+# raw count table을 불러옵니다.
+raw.count = read.csv(file="IFT46kD_in_IMCD/IMCD_count/mouse_cell_line_raw.csv", header=TRUE)
+
+# DESeq2가 원하는 형식으로 테이블을 만들어 줍니다.
+# 테이블의 Row name 을 유전자로 만들어주고, 불필요한 column은 제외시켜줍니다.
+rownames(raw.count) = make.names(raw.count[,1], unique=TRUE)
+raw.count = raw.count[,-c(0:1)]
+
+# 이제 DESeq2에 input으로 들어갈 table에 대한 정보를 담고 있는 sample.info 데이터 프레임을 만들어줌.
+# (어떤열이 control인지 어떤게 질병인ㄷ지에 대해 정리할 dataframe을 하나 더 만들어야함.)
+# *** 이때 주의할 점! 위의 count table과 column명을 동일하게 만들어야 함 ***
+sample.info = data.frame(row.names=c("CTRL_1","CTRL_2","CTRL_3","IFT46_1","IFT46_2","IFT46_3"),
+                         condition= factor(c("Control","Control","Control","Sample","Sample","Sample")))
+
+
+##########################################################
+###### DESeq package에 들어갈 데이터 모두 준비 완료 ######
+##########################################################
+
+# sample.info + raw count --> 'DESeqDataSetFromMatrix' function을 통해 dataset으로 변환
+data = DESeqDataSetFromMatrix(countData = round(raw.count), colData = sample.info ,design =~ condition)
+
+### Normalization
+# (컴퓨터 환경에 따라 다르긴 하지만, 약 15-20초 소요.)
+data = DESeq(data) # normalization function
+
+# normalization 하기 전과 후의 table을 비교
+head(raw.count) # normalization 전
+dim(raw.count) # normalization 전
+
+head(data.norm.table) # normalization 후
+dim(data.norm.table) # normalization 후
 
 #######################################
 ############# heatmap 구현#############
